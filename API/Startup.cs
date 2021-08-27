@@ -35,6 +35,7 @@ namespace API
                 options.UseSqlite(_config.GetConnectionString("DefaultConnection"));
             });
             services.AddControllers();
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" });
@@ -42,6 +43,7 @@ namespace API
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        // The ordering of methods in this class is very important!
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -54,6 +56,10 @@ namespace API
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            // The Cors(Cross-Origin Resource Sharing) allows port 4200 to use resource from port 5200
+            // The UseCors method must be located after app.UseRouting(), and before app.UseEndpoints
+            app.UseCors(policy => policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("https://localhost:4200"));
 
             app.UseAuthorization();
 
